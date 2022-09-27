@@ -1,12 +1,6 @@
+import { NavLink } from "react-router-dom";
+
 const useRequirementColumns = () => {
-  //   const { auth } = useAuth();
-
-  //   const { showModal } = useModal();
-
-  //   const location = useLocation();
-
-  //   const navigate = useNavigate();
-
   const columns = [
     {
       Header: "Company Name",
@@ -40,7 +34,11 @@ const useRequirementColumns = () => {
       breakpoint: "xs sm ",
 
       Cell: ({ row: { original: job } }) => {
-        return <span className="text-capitalize"> {job.job_title} </span>;
+        return (
+          <NavLink to={"/job-details"}>
+            <span className="text-capitalize">{job.job_title}</span>
+          </NavLink>
+        );
       },
     },
 

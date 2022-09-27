@@ -3,18 +3,15 @@ import React from "react";
 const GoToPage = ({ defaultValue, pageCount, gotoPage }) => {
   return (
     <select
-      value={defaultValue || 1}
+      value={defaultValue || 0}
       onChange={(e) => {
-        // const page = e.target.value ? Number(e.target.value) - 1 : 0;
         const page = e.target.value;
-        // if (page >= 1) {
         gotoPage(page);
-        // }
       }}
     >
       <option value="">--Select--</option>
       {[...Array(pageCount || 5)].map((p, pIdx) => (
-        <option value={pIdx + 1} key={pIdx + 1}>
+        <option value={pIdx} key={pIdx}>
           Page {pIdx + 1}
         </option>
       ))}
@@ -32,7 +29,6 @@ const DatatablePagination = ({
   return (
     <div className="py-lg-3 py-md-3 py-sm-3 py-2">
       <span>
-        {/* Go to page:{" "} */}
         <GoToPage
           gotoPage={gotoPage}
           defaultValue={defaultValue}
@@ -42,9 +38,7 @@ const DatatablePagination = ({
       <select
         className="mx-2"
         value={pageSize}
-        onChange={(e) => {
-          setPageSize(Number(e.target.value));
-        }}
+        onChange={(e) => setPageSize(Number(e.target.value))}
         style={{ fontSize: "15px" }}
       >
         {[

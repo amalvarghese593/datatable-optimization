@@ -1,5 +1,10 @@
 import React from "react";
-const MenuItem = ({ isSelected, onClick, component: Component, children }) => {
+const MenuItem = ({
+  isSelected,
+  onClick = () => {},
+  component: Component,
+  children,
+}) => {
   return (
     <Component onClick={onClick}>
       {({ active }) =>

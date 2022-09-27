@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import axios from "axios";
 import DataTable from "./datatable/DataTable";
 import useRequirementColumns from "../hooks/useRequirementColumns";
@@ -15,10 +15,9 @@ export const Homepage = () => {
     // dispatch(getRequirements(pageIndex || 1, search, pageSize || 20));
     if (typeof pageIndex !== "string" && typeof pageIndex !== "number")
       pageIndex = 1;
+    let searchQuery = search ? `&search=${search}` : "";
+    let createdUrl = `/api/v1/auth/requirements?page=${pageIndex}${searchQuery}&limit=${pageSize}`;
 
-    let createdUrl = search
-      ? `/api/v1/auth/requirements?page=${pageIndex}&search=${search}&limit=${pageSize}`
-      : `/api/v1/auth/requirements?page=${pageIndex}&limit=${pageSize}`;
     try {
       const res = await axios({
         method: "get",
@@ -27,7 +26,6 @@ export const Homepage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      // console.log(res.data);
       setData(res.data.result.docs);
       delete res.data.result.docs;
       setPager(res.data.result);
@@ -36,9 +34,6 @@ export const Homepage = () => {
     }
     /*eslint-disable react-hooks/exhaustive-deps*/
   }, []);
-  // useEffect(() => {
-  //   console.log("page:", pager);
-  // }, [pager]);
   return (
     <div>
       <h1>table</h1>

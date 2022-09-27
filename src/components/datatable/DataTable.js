@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useMemo, useState, useRef } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import {
   useTable,
@@ -45,7 +45,7 @@ const IndeterminateCheckbox = React.forwardRef(
     const defaultRef = React.useRef();
     const resolvedRef = ref || defaultRef;
 
-    React.useEffect(() => {
+    useEffect(() => {
       resolvedRef.current.indeterminate = indeterminate;
     }, [resolvedRef, indeterminate]);
 
@@ -111,7 +111,7 @@ const DataTable = ({
   /*eslint-disable   no-unused-vars*/
   const [accHiddenColumns, setAccHiddenColumns] = useState(hidden || []);
 
-  const [expanded, setExpanded] = React.useState({ firstName: true });
+  const [expanded, setExpanded] = useState({ firstName: true });
   const [collapsed, setCollapsed] = useState("");
   /*eslint-disable no-unused-vars */
   const [query, setQuery] = useSearchParams();
@@ -119,24 +119,16 @@ const DataTable = ({
   const { downloadReport, downloaded } = useDataExportCall();
 
   const sPagination = useMemo(() => {
-    // console.log("S pagination", paginationData?.totalPages);
     let pn = { totalPages: paginationData?.totalPages || 0 };
     return pn;
   }, [paginationData]);
 
   const getDefaultPage = useMemo(() => query.get("page"), [query]);
   const getDefaultPageLimit = useMemo(() => query.get("limit"), [query]);
-  useEffect(() => {
-    // console.log({ getDefaultPage });
-  }, [getDefaultPage]);
 
   const exportFromApi = ({ /* columns, data, fileName, */ records }) => {
-    // console.log("[records]: ", records);
     downloadReport({ data: records, title: title });
   };
-  // React.useEffect(() => {
-  //   console.log("data", getDefaultPageLimit);
-  // }, [getDefaultPageLimit]);
 
   const {
     getTableProps,
@@ -149,7 +141,6 @@ const DataTable = ({
     page,
     canPreviousPage,
     canNextPage,
-    pageOptions,
     pageCount,
     gotoPage,
     nextPage,
@@ -159,7 +150,6 @@ const DataTable = ({
     /*eslint-disable no-unused-vars */
     getToggleHideAllColumnsProps,
     allColumns,
-
     state: { pageIndex, pageSize, selectedRowIds, hiddenColumns, globalFilter },
   } = useTable(
     {
@@ -172,16 +162,13 @@ const DataTable = ({
       expanded: { expanded },
       manualPagination: ssp ? true : false,
       pageCount: sPagination?.totalPages,
-      // pageIndex: 2,
       initialState: {
         tableId: tableId,
         autoResetPage: false,
         hiddenColumns: hidden,
         showPagination: false,
         disableSortBy: true,
-
         globalFilter: query.get("search") || "",
-        // pageIndex: 1,
         pageIndex: parseInt(getDefaultPage) || 0,
         pageSize: disablePagination
           ? 350
@@ -229,69 +216,39 @@ const DataTable = ({
       ]);
     }
   );
-  const pageRef = useRef(0);
   useEffect(() => {
-    console.log({ pageIndex });
-    if (pageRef.current !== pageIndex) {
-      pageRef.current = pageIndex;
-
-      // query.set("page", parseInt(pageIndex) + 1);
-      // console.log("pg: ", query.get("page"));
-      // navigate({ search: query.toString() });
-    }
+    query.set("page", parseInt(pageIndex));
+    navigate({ search: query.toString() });
   }, [pageIndex]);
+
   useEffect(() => {
     if (fetchData) {
       fetchData({
-        pageIndex: pageIndex === "0" || pageIndex === 0 ? 1 : pageIndex,
+        pageIndex:
+          pageIndex === "0" || pageIndex === 0 ? 1 : parseInt(pageIndex) + 1,
         pageSize,
         search: query.get("search"),
       });
     }
     /*eslint-disable   react-hooks/exhaustive-deps*/
-    // }, [query.get("limit"), query.get("page"), query.get("search")]);
   }, [pageSize, pageIndex, query.get("search")]);
 
-  // React.useEffect(() => {
-  //   console.log("Search: ", state.globalFilter);
-  // }, [state.globalFilter]);
-
   const onPageChange = useCallback(
-    (pageNumArg) => {
-      gotoPage(pageNumArg);
-      // setTimeout(() => {
-      //   query.set("page", pageNumArg);
-      //   navigate({ search: query.toString() });
-      // });
-    },
+    (pageNumArg) => gotoPage(pageNumArg),
     /*eslint-disable   react-hooks/exhaustive-deps*/
-    [query, gotoPage]
+    [gotoPage]
   );
   const onPageLimitChange = useCallback(
     (limitArg) => {
       setPageSize(limitArg);
-      gotoPage(1);
-      // gotoPage(0);
       setTimeout(() => {
         query.set("limit", limitArg);
-        query.set("page", 1);
-        // query.set("page", 0);
+        query.set("page", 0);
         navigate({ search: query.toString() });
       });
     },
     [query]
   );
-  useEffect(() => {
-    //console.log("selectedRowIds", selectedRowIds);
-    // const selectedIds = Object.keys(selectedRowIds);
-    // var selectedRowsData = selectedIds
-    //   .map((x) => data[x])
-    //   .filter((x) => x != null);
-    // if (onSelect) {
-    //   onSelect(selectedRowsData);
-    // }
-    /* eslint-disable react-hooks/exhaustive-deps */
-  }, [selectedRowIds]);
   const noRowsSelected = useMemo(
     () => Object.keys(selectedRowIds)?.length === 0,
     [selectedRowIds]
@@ -322,21 +279,9 @@ const DataTable = ({
     return uncollapsedColumns?.[0] || {};
   }, [allColumns, hiddenColumns]);
 
-  const onNextPageHandler = () => {
-    // alert("next");
-    nextPage();
-    // setTimeout(() => {
-    //   query.set("page", pageIndex + 1);
-    //   navigate({ search: query.toString() });
-    // });
-  };
-  const onPrevPageHandler = () => {
-    previousPage();
-    setTimeout(() => {
-      query.set("page", pageIndex - 1);
-      navigate({ search: query.toString() });
-    });
-  };
+  const onNextPageHandler = () => nextPage();
+  const onPrevPageHandler = () => previousPage();
+
   const showingRecordsHint = useMemo(() => {
     let pidx = pageIndex === 0 ? 1 : pageIndex;
     let lastIndex = pidx * pageSize;
@@ -551,7 +496,7 @@ const DataTable = ({
               <span>
                 Page
                 <strong>
-                  {pageIndex + 1} of {pageOptions.length}
+                  {pageIndex + 1} of {pageCount}
                 </strong>
               </span>
             </div>
