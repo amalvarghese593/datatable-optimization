@@ -281,14 +281,14 @@ const DataTable = ({
 
   const onNextPageHandler = () => nextPage();
   const onPrevPageHandler = () => previousPage();
-
   const showingRecordsHint = useMemo(() => {
-    let pidx = pageIndex === 0 ? 1 : pageIndex;
-    let lastIndex = pidx * pageSize;
-    let firstIndex = lastIndex - pageSize;
-    return `Showing ${firstIndex === 0 ? 1 : firstIndex} to ${lastIndex} of ${
-      pageSize * pageCount
-    }`;
+    let docsCount = paginationData.totalDocs;
+    let lastIndex = (parseInt(pageIndex) + 1) * pageSize;
+    let firstIndex = lastIndex - pageSize + 1;
+    return `Showing ${firstIndex} to ${Math.min(
+      lastIndex,
+      docsCount
+    )} of ${docsCount}`;
   }, [pageCount, pageSize, pageIndex]);
   return (
     <Styles>
