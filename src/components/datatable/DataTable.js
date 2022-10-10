@@ -217,6 +217,7 @@ const DataTable = ({
     }
   );
   useEffect(() => {
+    setCollapsed(true);
     query.set("page", parseInt(pageIndex));
     navigate({ search: query.toString() });
   }, [pageIndex]);
@@ -262,9 +263,7 @@ const DataTable = ({
       onSelect(selectedRowsData);
     }
   };
-  const handleCollapse = (rowIndex) => {
-    setCollapsed(rowIndex);
-  };
+  const handleCollapse = (rowIndex) => setCollapsed(rowIndex);
   const hasAnyCollapsed = useMemo(() =>
     allColumns.some((column) => column?.collapsed)
   );
